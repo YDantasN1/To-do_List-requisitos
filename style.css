@@ -1,0 +1,527 @@
+:root {
+    --bg-start: #EAF1FF;
+    --bg-end: #F8FAFF;
+    --card: #ffffff;
+    --primary: #3B6EF6;
+    --primary-dark: #2C57D6;
+    --title: #3D34D6;
+    --subtitle: #6F8FF2;
+    --text: #20294A;
+    --muted: #7A88A8;
+    --border: #E1E9FB;
+    --success: #16A34A;
+    --danger: #DC2626;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+html,
+body {
+    height: 100%;
+}
+
+body {
+    margin: 0;
+    font-family: 'Inter', sans-serif;
+    color: var(--text);
+    background: #20294A;
+}
+
+.app-shell {
+    max-width: 420px;
+    margin: 0 auto;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    background: linear-gradient(180deg, var(--bg-start), var(--bg-end));
+    position: relative;
+    /* overflow intentionally NOT hidden here so a dragged card is never clipped/lost */
+}
+
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(6px);
+    }
+    to {
+        opacity: 1;
+        transform: none;
+    }
+}
+
+.field-label {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--title);
+    margin: 0 0 6px 2px;
+    display: block;
+}
+
+.field-input {
+    width: 100%;
+    padding: 13px 14px;
+    border-radius: 12px;
+    border: 1.5px solid var(--border);
+    background: #F5F8FF;
+    font-size: 15px;
+    font-family: 'Inter', sans-serif;
+    color: var(--text);
+    margin-bottom: 16px;
+    outline: none;
+    transition: border-color .15s;
+}
+
+.field-input:focus {
+    border-color: var(--primary);
+}
+
+.btn-primary {
+    width: 100%;
+    padding: 14px;
+    border: none;
+    border-radius: 14px;
+    background: #6F8FF2;
+    color: #fff;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 600;
+    font-size: 15.5px;
+    cursor: pointer;
+    box-shadow: 0 12px 22px -10px rgba(44, 87, 214, .55);
+    transition: transform .12s ease;
+}
+
+.btn-primary:active {
+    transform: scale(.98);
+}
+
+.error-msg {
+    color: var(--danger);
+    font-size: 13px;
+    text-align: center;
+    margin: -8px 0 12px;
+    min-height: 14px;
+}
+
+
+/* ---------- TASKS SCREEN ---------- */
+
+.task-screen {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+}
+
+.task-header {
+    background: #98cae5;
+    padding: 20px 22px 46px;
+    color: #fff;
+    position: relative;
+    border-radius: 0 0 28px 28px;
+    margin-bottom: 50px;
+}
+
+.header-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+
+.header-date {
+    font-size: 12.5px;
+    opacity: .85;
+    font-weight: 500;
+}
+
+.header-title {
+    font-family: 'Poppins', sans-serif;
+    font-size: 24px;
+    font-weight: 700;
+    margin: 4px 0 2px;
+}
+
+.stats-row {
+    display: flex;
+    gap: 10px;
+    margin-top: 18px;
+}
+
+.stat-card {
+    flex: 1;
+    background: rgba(255, 255, 255, .16);
+    border-radius: 16px;
+    padding: 12px 8px;
+    text-align: center;
+}
+
+.stat-num {
+    font-size: 22px;
+    font-weight: 700;
+    font-family: 'Poppins', sans-serif;
+}
+
+.stat-label {
+    font-size: 11px;
+    opacity: .9;
+    margin-top: 2px;
+}
+
+.task-body {
+    flex: 1;
+    padding: 0 20px 100px;
+    margin-top: -26px;
+}
+
+.section-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 0 4px 12px;
+    gap: 8px;
+}
+
+.section-label {
+    font-size: 12.5px;
+    font-weight: 700;
+    color: var(--muted);
+    letter-spacing: .3px;
+    flex-shrink: 0;
+}
+
+.section-hint {
+    font-size: 11px;
+    color: var(--subtitle);
+    font-weight: 500;
+    text-align: right;
+}
+
+.task-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    position: relative;
+}
+
+.task-card {
+    background: var(--card);
+    border-radius: 18px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    box-shadow: 0 8px 20px -14px rgba(30, 50, 120, .35);
+    border: 1.5px solid transparent;
+    transition: box-shadow .15s;
+    cursor: grab;
+}
+
+.task-card.completed .task-title {
+    text-decoration: line-through;
+    color: var(--muted);
+}
+
+.task-card.placeholder-hidden {
+    visibility: hidden;
+}
+
+.grip {
+    color: #C4D0EE;
+    cursor: grab;
+    padding: 2px 4px;
+    display: flex;
+    align-items: center;
+    user-select: none;
+    touch-action: none;
+}
+
+.grip:active {
+    cursor: grabbing;
+}
+
+.task-status{
+    padding-left: 14px;
+}
+
+.checkbox {
+    width: 23px;
+    height: 23px;
+    border-radius: 50%;
+    border: 2px solid #B9CBF7;
+    flex-shrink: 0;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background .15s, border-color .15s;
+}
+
+.checkbox.checked {
+    background: var(--success);
+    border-color: var(--success);
+}
+
+.task-info {
+    user-select: none;
+    padding: 14px 0;
+    flex: 1;
+    min-width: 0;
+}
+
+/* somente tarefas pendentes são arrastáveis: evita conflito com o scroll no celular */
+.task-card:not(.completed) .task-info {
+    touch-action: none;
+}
+
+.task-card.completed {
+    cursor: default;
+}
+
+.task-card.completed .task-info {
+    cursor: default;
+}
+
+.task-title {
+    font-weight: 600;
+    font-size: 14.5px;
+    color: var(--text);
+    margin: 0 0 3px;
+    line-height: 1.25;
+}
+
+.task-time {
+    font-size: 12px;
+    color: var(--muted);
+}
+
+.task-actions {
+    padding-right: 14px;
+}
+
+.delete-btn {
+    background: none;
+    border: none;
+    color: #B9C4E0;
+    cursor: pointer;
+    padding: 4px;
+    display: flex;
+    align-items: center;
+}
+
+.delete-btn:hover {
+    color: var(--danger);
+}
+
+.empty-state {
+    text-align: center;
+    color: var(--muted);
+    font-size: 13.5px;
+    padding: 40px 10px;
+}
+
+.fab-wrap {
+    position: sticky;
+    bottom: 24px;
+    left: 0;
+    right: 0;
+    display: flex;
+    justify-content: center;
+    padding: 0 20px;
+    margin-top: 16px;
+    margin-bottom: 16px;
+}
+
+.fab-btn {
+    width: 100%;
+    max-width: 380px;
+    padding: 15px;
+    border: none;
+    border-radius: 16px;
+    background: #6F8FF2;
+    color: #fff;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 600;
+    font-size: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    cursor: pointer;
+    box-shadow: 0 14px 24px -10px rgba(44, 87, 214, .55);
+}
+
+.fab-btn.disabled {
+    background: #C4D0EE;
+    box-shadow: none;
+    cursor: not-allowed;
+}
+
+.limit-msg {
+    text-align: center;
+    color: var(--muted);
+    font-size: 12.5px;
+    margin-bottom: 10px;
+    padding: 0 10px;
+}
+
+
+/* ---------- DRAG GHOST (fixed to viewport, never clipped) ---------- */
+
+.drag-ghost {
+    position: fixed;
+    z-index: 999;
+    border-radius: 18px;
+    background: var(--card);
+    box-shadow: 0 20px 34px -12px rgba(30, 50, 120, .5);
+    border: 1.5px solid var(--primary);
+    transform: scale(1.03);
+    opacity: .97;
+
+}
+.task-card.drag-ghost {
+    cursor: grabbing !important;
+}
+
+
+/* ---------- MODAL ---------- */
+
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(20, 30, 60, .42);
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    z-index: 20;
+    animation: fadeIn .2s ease;
+}
+
+.modal-sheet {
+    width: 100%;
+    max-width: 420px;
+    background: #fff;
+    border-radius: 24px 24px 0 0;
+    padding: 22px 22px 26px;
+}
+
+.modal-title {
+    font-family: 'Poppins', sans-serif;
+    font-weight: 700;
+    font-size: 18px;
+    color: var(--title);
+    margin: 0 0 16px;
+}
+
+.modal-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 4px;
+}
+
+.btn-secondary {
+    flex: 1;
+    padding: 13px;
+    border-radius: 14px;
+    border: 1.5px solid var(--border);
+    background: #fff;
+    color: var(--muted);
+    font-weight: 600;
+    font-size: 14.5px;
+    cursor: pointer;
+}
+
+.modal-actions .btn-primary {
+    flex: 1.4;
+}
+
+.btn-danger {
+    flex: 1.4;
+    padding: 13px;
+    border: none;
+    border-radius: 14px;
+    background: linear-gradient(135deg, #F1685E, var(--danger));
+    color: #fff;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 600;
+    font-size: 14.5px;
+    cursor: pointer;
+    box-shadow: 0 12px 22px -10px rgba(220, 38, 38, .45);
+    transition: transform .12s ease;
+}
+
+.btn-danger:active {
+    transform: scale(.98);
+}
+
+.btn-success {
+    flex: 1.4;
+    padding: 13px;
+    border: none;
+    border-radius: 14px;
+    background: linear-gradient(135deg, #34D399, var(--success));
+    color: #fff;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 600;
+    font-size: 14.5px;
+    cursor: pointer;
+    box-shadow: 0 12px 22px -10px rgba(22, 163, 74, .45);
+    transition: transform .12s ease;
+}
+
+.btn-success:active {
+    transform: scale(.98);
+}
+
+.confirm-sheet {
+    text-align: center;
+}
+
+.confirm-icon {
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #F1685E, var(--danger));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 14px;
+}
+
+.confirm-icon.success {
+    background: linear-gradient(135deg, #34D399, var(--success));
+}
+
+.confirm-text {
+    color: var(--muted);
+    font-size: 14px;
+    line-height: 1.5;
+    margin: 0 0 20px;
+}
+
+.confirm-text b {
+    color: var(--text);
+}
+
+.toast {
+    position: fixed;
+    bottom: 100px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #20294A;
+    color: #fff;
+    padding: 10px 18px;
+    border-radius: 12px;
+    font-size: 13px;
+    font-weight: 500;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity .25s, transform .25s;
+    z-index: 30;
+    white-space: nowrap;
+}
+
+.toast.show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(-6px);
+}
