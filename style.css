@@ -116,7 +116,7 @@ body {
 }
 
 .task-header {
-    background: #98cae5;
+    background: #6F8FF2;
     padding: 20px 22px 46px;
     color: #fff;
     position: relative;
@@ -297,6 +297,22 @@ body {
 
 .task-actions {
     padding-right: 14px;
+    display: flex;
+    align-items: center;
+}
+
+.edit-btn{
+    background: none;
+    border: none;
+    color: #B9C4E0;
+    cursor: pointer;
+    padding: 4px;
+    display: flex;
+    align-items: center;
+}
+
+.edit-btn:hover{
+    color: #7A88A8;
 }
 
 .delete-btn {
@@ -454,25 +470,6 @@ body {
     transform: scale(.98);
 }
 
-.btn-success {
-    flex: 1.4;
-    padding: 13px;
-    border: none;
-    border-radius: 14px;
-    background: linear-gradient(135deg, #34D399, var(--success));
-    color: #fff;
-    font-family: 'Poppins', sans-serif;
-    font-weight: 600;
-    font-size: 14.5px;
-    cursor: pointer;
-    box-shadow: 0 12px 22px -10px rgba(22, 163, 74, .45);
-    transition: transform .12s ease;
-}
-
-.btn-success:active {
-    transform: scale(.98);
-}
-
 .confirm-sheet {
     text-align: center;
 }
@@ -486,10 +483,6 @@ body {
     align-items: center;
     justify-content: center;
     margin: 0 auto 14px;
-}
-
-.confirm-icon.success {
-    background: linear-gradient(135deg, #34D399, var(--success));
 }
 
 .confirm-text {

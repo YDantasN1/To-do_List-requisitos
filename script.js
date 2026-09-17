@@ -31,9 +31,25 @@
                 tasks = [ ];
                  set('tasks', tasks, true);
             }
+            tasks = tasks.filter((task) => {
+                const createdAt = new Date(task.created_at);
+                const resetTasks = new Date();
+                console.log(createdAt.getFullYear());
+                console.log(createdAt.getMonth()+1);
+                console.log(createdAt.getDate())
+                if (createdAt.getFullYear() > resetTasks.getFullYear()) {
+                    return false;
+                }
+                if (createdAt.getMonth() > resetTasks.getMonth()) {
+                    return false;
+                }
+                return createdAt.getDate() >= resetTasks.getDate();
+
+            });
             state.tasks = tasks.sort((a, b) => a.order - b.order);
             state.loading = false;
             render();
+
         }
 
         function cryptoId() {
@@ -56,6 +72,33 @@
         const icoPlus = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>`;
         const icoCheck = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>`;
         const icoAlert = `<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 9v4"/><path d="M12 17h.01"/><path d="M10.29 3.86 1.82 18a1.5 1.5 0 0 0 1.29 2.25h17.78A1.5 1.5 0 0 0 22.18 18L13.71 3.86a1.5 1.5 0 0 0-2.42 0Z"/></svg>`;
+        const icoEdit = `<svg 
+                                class="nome-grupo__icone"
+                                fill="currentColor"
+                                stroke="currentColor" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"
+                                xmlns="http://www.w3.org/2000/svg"
+                                width="17"
+                                height="17"
+                                viewBox="0 0 494.936 494.936"
+                                xml:space="preserve"
+                            >
+                                <g>
+                                    <g>
+                                        <path 
+                                            class="nome-grupo__icone"
+                                            d="M389.844,182.85c-6.743,0-12.21,5.467-12.21,12.21v222.968c0,23.562-19.174,42.735-42.736,42.735H67.157
+                                            c-23.562,0-42.736-19.174-42.736-42.735V150.285c0-23.562,19.174-42.735,42.736-42.735h267.741c6.743,0,12.21-5.467,12.21-12.21
+                                            s-5.467-12.21-12.21-12.21H67.157C30.126,83.13,0,113.255,0,150.285v267.743c0,37.029,30.126,67.155,67.157,67.155h267.741
+                                            c37.03,0,67.156-30.126,67.156-67.155V195.061C402.054,188.318,396.587,182.85,389.844,182.85z"/>
+                                        <path d="M483.876,20.791c-14.72-14.72-38.669-14.714-53.377,0L221.352,229.944c-0.28,0.28-3.434,3.559-4.251,5.396l-28.963,65.069
+                                            c-2.057,4.619-1.056,10.027,2.521,13.6c2.337,2.336,5.461,3.576,8.639,3.576c1.675,0,3.362-0.346,4.96-1.057l65.07-28.963
+                                            c1.83-0.815,5.114-3.97,5.396-4.25L483.876,74.169c7.131-7.131,11.06-16.61,11.06-26.692
+                                            C494.936,37.396,491.007,27.915,483.876,20.791z M466.61,56.897L257.457,266.05c-0.035,0.036-0.055,0.078-0.089,0.107
+                                            l-33.989,15.131L238.51,247.3c0.03-0.036,0.071-0.055,0.107-0.09L447.765,38.058c5.038-5.039,13.819-5.033,18.846,0.005
+                                            c2.518,2.51,3.905,5.855,3.905,9.414C470.516,51.036,469.127,54.38,466.61,56.897z"/>
+                                    </g>
+                                </g>
+                            </svg>`
 
         // ---------- render ----------
         function render() {
@@ -112,6 +155,7 @@
         </div>
 
         <div class="toast" id="toast"></div>
+        ${state.showEditId ? modalHtmlEdit() : ''}
         ${state.showModal ? modalHtml() : ''}
         ${state.confirmDeleteId ? confirmDeleteHtml() : ''}
       </div>
@@ -130,6 +174,10 @@
         state.confirmDeleteId = t.id;
         render();
       };
+      card.querySelector('.edit-btn').onclick = ()=>{
+          state.showEditId = t.id;
+          render();
+      };
       if(!t.completed){
         const info = card.querySelector('.task-info');
         info.addEventListener('pointerdown', (e)=> startDrag(e, t.id));
@@ -141,6 +189,9 @@
     }
     if(state.confirmDeleteId){
       wireConfirmDelete();
+    }
+    if(state.showEditId){
+        wireModalEdit();
     }
   }
 
@@ -155,6 +206,7 @@
           <span class="task-time">${t.completed? 'Concluída às '+escapeHtml(t.time||'' ): ''}</span>
         </div>
         <div class = "task-actions">
+        <button class = "edit-btn" title = "Editar tarefa">${icoEdit}</button>
         <button class="delete-btn" title="Excluir tarefa">${icoTrash}</button>
         </div>
       </div>
@@ -351,8 +403,12 @@
     }
     title = title.substring(0, 1).toUpperCase()+title.substring(1);
     state.tasks.push({
-      id: cryptoId(), title, time: '',
-      completed:false, order: state.tasks.length
+        id: cryptoId(),
+        title,
+        time: '',
+        created_at: new Date(),
+        completed:false,
+        order: state.tasks.length
     });
     state.showModal = false;
     state.addError = '';
@@ -360,6 +416,60 @@
     render();
     showToast('Tarefa adicionada');
   }
+  // editar task modal
+    function modalHtmlEdit(){
+        const tarefa = state.tasks.find((task) => task.id === state.showEditId);
+      return `
+      <div class="modal-overlay" id="modalOverlay">
+        <div class="modal-sheet">
+          <h3 class="modal-title">Editar tarefa</h3>
+          <label class="field-label">Título</label>
+          <input class="field-input" id="newTitle" value = "${tarefa.title}" placeholder="Ex: Organizar prateleiras" maxlength="80" />
+          <div class="error-msg">${state.addError}</div>
+          <div class="modal-actions">
+            <button class="btn-secondary" id="btnCancelar">Cancelar</button>
+            <button class="btn-primary" id="btnAtualizarTarefa">Atualizar tarefa</button>
+          </div>
+        </div>
+      </div>
+    `;
+    }
+    function wireModalEdit(){
+        document.getElementById('modalOverlay').addEventListener('click', (e)=>{
+            if(e.target.id === 'modalOverlay'){ state.showEditId=undefined; render(); }
+        });
+        document.getElementById('btnCancelar').onclick = ()=>{ state.showEditId=undefined; render(); };
+        document.getElementById('btnAtualizarTarefa').onclick = updateTask;
+        const newTitle = document.getElementById('newTitle');
+        newTitle.focus();
+        // capitaliza a primeira letra automaticamente enquanto o usuário digita
+        newTitle.addEventListener('input', () => {
+            const start = newTitle.selectionStart;
+            const end = newTitle.selectionEnd;
+            const v = newTitle.value;
+            newTitle.value = v ? v.charAt(0).toUpperCase() + v.slice(1) : v;
+            newTitle.setSelectionRange(start, end);
+        });
+        newTitle.addEventListener('keydown', e => { if (e.key === 'Enter') updateTask(); });
+    }
+    function updateTask(){
+
+        let title = document.getElementById('newTitle').value.trim();
+        if(!title){
+            state.addError = 'Digite um título para a tarefa.';
+            render();
+            return;
+        }
+        title = title.substring(0, 1).toUpperCase()+title.substring(1);
+        const index = state.tasks.findIndex((task) => task.id === state.showEditId);
+        state.tasks[index].title = title;
+        state.showEditId = undefined;
+        state.addError = '';
+        persistTasks();
+        render();
+        showToast('Tarefa atualizada');
+    }
+
 
   // ---------- delete confirmation modal ----------
   function confirmDeleteHtml(){
